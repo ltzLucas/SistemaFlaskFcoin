@@ -1,3 +1,4 @@
+from collections import Counter
 from random import random
 from time import time
 from flask import Flask, request, redirect, render_template, jsonify
@@ -154,20 +155,45 @@ def receberTransacao(id,remetente,recebedor,valor,status):
         Validadores = Validador.query.all()
         rem = cliente.visualizar_Cliente_id(remetente)
 
-        escolhe_validadores()
+        escolhidos = escolhe_validadores()
 
         saldoRem = rem['qtdMoeda']
+        resultado_json = []
         for v in Validadores:
-            url = f'http://{v.ip}/validar/{saldoRem}/{valor}'
-            response = requests.post(url)
+            for e in escolhidos:
+                if v.id == e:
+                    url = f'http://{v.ip}/validar/{v.id}/{saldoRem}/{valor}'
+                    response = requests.post(url)
+                    resultado_json.append(response.json())
 
-        print(response.text)
+
+        print(resultado_json)
+
+        status_counts = Counter(item['status'] for item in resultado_json)
+
+        most_common_status = status_counts.most_common(1)[0][0]
+
+        print(f"O valor de status que mais aparece é: {most_common_status}")
+
+        ids_with_different_status = [item['id'] for item in resultado_json if item['status'] != most_common_status]
+        ids_with_same_status = [item['id'] for item in resultado_json if item['status'] == most_common_status]
+        print(f"IDs com valores de status diferentes da maioria: {ids_with_different_status}")
+        print(f"IDs com valores de status igauis da maioria: {ids_with_same_status}")
+
+        #PARA QUEM ACERTOU A TRANSACAO adiciona +1
+        for same_ids in ids_with_same_status:
+            adicionar_transacao(same_ids)
+            #TIRA FLAG CASO ELE TENHA ALGUMA E TRANSACOES SEJA >= 10000
+            tirar_flag(same_ids)
+
+        #ADICIONA UMA FLAG PRA QUEM ERROU A TRANSACAO
+        for different_ids in ids_with_different_status:
+            #ADICIONA UMA FLAG E CASO SEJA A TERCEIRA ELE É DELETADO DA REDE
+            adicionar_flag(different_ids)
 
         return 'retorno mainSeletor transacao'
     else:
         return jsonify(['Method Not Allowed'])
-
-    return 'ola'
 
 def escolhe_validadores():
     Validadores = Validador.query.all()
