@@ -1,4 +1,5 @@
 import json
+from collections import Counter
 from time import time
 
 import requests
@@ -248,10 +249,23 @@ def CriaTransacao(rem, reb, valor):
         print(objeto.horario)
 
         seletores = Seletor.query.all()
+        resultado_json = []
         for i in seletores:
-            url = f'http://{i.ipSeletor}/transacao/{objeto.id}/{objeto.remetente}/{objeto.recebedor}/{objeto.valor}/{objeto.status}/{objeto.horario}'
-            print('Estou aqui',url)
-            requests.post(url)
+            url = f'http://{i.ipSeletor}/transacao/{objeto.id}/{objeto.remetente}/{i.id}/{objeto.valor}/{objeto.horario}'
+            response = requests.post(url)
+            resultado_json.append(response.json())
+        # Contar a ocorrência de cada valor de status
+        contagem_status = Counter(objeto["status"] for objeto in resultado_json)
+
+        # Identificar o valor com maior contagem
+        valor_mais_frequente = contagem_status.most_common(1)[0][0]
+
+        print(valor_mais_frequente)
+
+        editaTransacao(objeto.id,valor_mais_frequente)
+
+        for obj in resultado_json:
+            editaTransacaoSeletor(obj['id_transacao'],obj['status'])
 
         return jsonify(objeto)
     else:
@@ -274,6 +288,27 @@ def EditaTransacao(id, status):
             return jsonify(data)
     else:
         return jsonify(['Method Not Allowed'])
+def editaTransacao(id,status):
+    url = f'http://127.0.0.1:5000/transactions/{id}/{status}'  # URL do endpoint Flask
+    response = requests.post(url)
+
+    if response.status_code == 200:
+        dados = response.json()
+        print('Resposta do servidor:')
+        print(dados)
+    else:
+        print('Falha ao enviar a mensagem.')
+
+def editaTransacaoSeletor(id,status):
+    url = f'http://127.0.0.1:5001/trans/{id}/{status}'  # URL do endpoint Flask
+    response = requests.post(url)
+
+    if response.status_code == 200:
+        dados = response.json()
+        print('Resposta do servidor:')
+        print(dados)
+    else:
+        print('Falha ao enviar a mensagem.')
 
 
 @app.errorhandler(404)
