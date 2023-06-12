@@ -98,13 +98,16 @@ def Cadastro_dos_Validadores(nome, ip,FCoins):
 
 def calcular_percent():
     validadores = Validador.query.all()
+    meuSeletor = MeuSeletor.query.filter_by(id=1).first()
 
     totalFCoins = 0
     for v in validadores:
-        totalFCoins = totalFCoins + v.FCoins
+        totalFCoins += v.FCoins
+    meuSeletor.fCoins = totalFCoins
+    db.session.commit()
 
     for v in validadores:
-        percentual = int((v.FCoins / totalFCoins) * 100)
+        percentual = int((v.FCoins / meuSeletor.fCoins) * 100)
         if percentual < 5:
             percent = 5
         elif percentual > 40:
