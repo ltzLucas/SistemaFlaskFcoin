@@ -204,54 +204,15 @@ def escolhe_validadores():
         Validadores = Validador.query.all()
         if len(Validadores) < 3:
             print('Não foi possivel concluir a transação por falta de validadores')
-            #COLOCAR UM RETURN PARA MOSTRAR Q FALHOU A OPERAÇÃO
+            return  0
     if len(Validadores) >= 5:
-        validadoresID = []
-        pesos = []
-        for v in Validadores:
-            validadoresID.append(v.id)
-            pesos.append(v.percent)
-
-        v1 = random.choices(validadoresID, pesos)[0]
-        #limpa as listas
-        validadoresID.clear()
-        pesos.clear()
-
-        for v in Validadores:
-            if v.id != v1:
-                validadoresID.append(v.id)
-                pesos.append(v.percent)
-
-        v2 = random.choices(validadoresID, pesos)[0]
-        # limpa as listas
-        validadoresID.clear()
-        pesos.clear()
-        for v in Validadores:
-            if v.id != v1 and  v.id != v2:
-                validadoresID.append(v.id)
-                pesos.append(v.percent)
-
-        v3 = random.choices(validadoresID, pesos)[0]
-        # limpa as listas
-        validadoresID.clear()
-        pesos.clear()
-        for v in Validadores:
-            if v.id != v1 and  v.id != v2 and v.id != v3:
-                validadoresID.append(v.id)
-                pesos.append(v.percent)
-
-        v4 = random.choices(validadoresID, pesos)[0]
-        # limpa as listas
-        validadoresID.clear()
-        pesos.clear()
-        for v in Validadores:
-            if v.id != v1 and  v.id != v2 and v.id != v3 and v.id != v4:
-                validadoresID.append(v.id)
-                pesos.append(v.percent)
-
-        v5 = random.choices(validadoresID, pesos)[0]
-
-        print(v1,v2,v3,v4,v5)
+        escolhidos = cinco_validadores()
+        print(f'5 ou mais validadores os escolhidos sao:  {escolhidos}')
+        return  escolhidos
+    elif len(Validadores) == 3 or len(Validadores) == 4:
+        escolhidos = tres_validadores()
+        print(f'3 ou 4 validadores os escolhidos sao:  {escolhidos}')
+        return escolhidos
 
 @app.errorhandler(404)
 def page_not_found(error):
