@@ -214,6 +214,36 @@ def escolhe_validadores():
         print(f'3 ou 4 validadores os escolhidos sao:  {escolhidos}')
         return escolhidos
 
+def adicionar_transacao(id):
+    validadorObjeto = Validador.query.filter_by(id=id).first()
+    db.session.commit()
+    validadorObjeto.transacoes += 1
+    db.session.commit()
+
+def adicionar_flag(id):
+    validadorObjeto = Validador.query.filter_by(id=id).first()
+    db.session.commit()
+    validadorObjeto.flag += 1
+    db.session.commit()
+    #Verifica quantas flags tem caso flags > 2 ele é deletado
+    verifica_qtd_flags(id)
+
+def verifica_qtd_flags(id):
+    validadorObjeto = Validador.query.filter_by(id=id).first()
+    db.session.commit()
+    if validadorObjeto.flag > 2:
+        objeto = Validador.query.get(id)
+        db.session.delete(objeto)
+        db.session.commit()
+def tirar_flag(id):
+    validadorObjeto = Validador.query.filter_by(id=id).first()
+    db.session.commit()
+    # ---------------------------------------------ARRUMAR 10000 TRANSACOES------------------------------------------
+    if validadorObjeto.flag > 0 and validadorObjeto.transacoes >= 10 * validadorObjeto.aux_flag:
+        validadorObjeto.flag -= 1
+        validadorObjeto.aux_flag += 1
+        db.session.commit()
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('page_not_found.html'), 404
