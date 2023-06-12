@@ -26,19 +26,6 @@ def visualizar_transacoes():
     else:
         print('Falha ao enviar a mensagem.')
 
-def hora():
-    url = f'http://127.0.0.1:5000/hora'
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        dados = response.json()
-        print('Hora recebida com sucesso!')
-        return dados
-    else:
-        print('Falha ao enviar a mensagem.')
-
-
-
 def visualizar_transacoes_id(id):
     url = f'http://127.0.0.1:5000/transacoes/{id}'
     response = requests.get(url)
@@ -66,7 +53,7 @@ def deletar_cliente(id):
         print('Falha ao enviar a mensagem.')
 
 
-cadastrar_transacao(1,2,100)
-
-visualizar_transacoes()
+# cadastrar_transacao(1,2,100)
+#
+# visualizar_transacoes()
 

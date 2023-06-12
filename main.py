@@ -10,7 +10,7 @@ from datetime import date, datetime
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///testeMain.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -44,6 +44,8 @@ class Transacao(db.Model):
     recebedor: int
     valor: int
     status: int
+    horario: db.DateTime
+
 
     id = db.Column(db.Integer, primary_key=True)
     remetente = db.Column(db.Integer, unique=False, nullable=False)
@@ -243,9 +245,11 @@ def CriaTransacao(rem, reb, valor):
         db.session.add(objeto)
         db.session.commit()
 
+        print(objeto.horario)
+
         seletores = Seletor.query.all()
         for i in seletores:
-            url = f'http://{i.ipSeletor}/transacao/{objeto.id}/{objeto.remetente}/{objeto.recebedor}/{objeto.valor}/{objeto.status}'
+            url = f'http://{i.ipSeletor}/transacao/{objeto.id}/{objeto.remetente}/{objeto.recebedor}/{objeto.valor}/{objeto.status}/{objeto.horario}'
             print('Estou aqui',url)
             requests.post(url)
 

@@ -13,7 +13,7 @@ import time
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stsaws.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///seletor.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -148,8 +148,8 @@ def ApagarValidador(id):
     else:
         return jsonify(['Method Not Allowed'])
 
-@app.route('/transacao/<int:id>/<int:remetente>/<int:recebedor>/<int:valor>/<int:status>', methods=['POST'])
-def receberTransacao(id,remetente,recebedor,valor,status):
+@app.route('/transacao/<int:id>/<int:remetente>/<int:recebedor>/<int:valor>/<int:status>/<string:horario>', methods=['POST'])
+def receberTransacao(id,remetente,recebedor,valor,status,horario):
     if request.method == 'POST':
         Validadores = Validador.query.all()
         rem = cliente.visualizar_Cliente_id(remetente)
@@ -161,7 +161,7 @@ def receberTransacao(id,remetente,recebedor,valor,status):
         for v in Validadores:
             for e in escolhidos:
                 if v.id == e:
-                    url = f'http://{v.ip}/validar/{v.id}/{saldoRem}/{valor}'
+                    url = f'http://{v.ip}/validar/{v.id}/{saldoRem}/{valor}/{horario}'
                     response = requests.post(url)
                     resultado_json.append(response.json())
 

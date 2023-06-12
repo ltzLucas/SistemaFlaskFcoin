@@ -1,39 +1,45 @@
 from datetime import datetime
+from time import sleep
 
 
-
-
-#
 # def pegarhora():
-#     dados = transacoes.hora()
-#
-#
-#
-#     data = datetime.strptime(dados,"%a, %d %b %Y %H:%M:%S %Z")
-#
-#
-#     print(data)
-#     dia = data.day
-#     mes = data.month
-#     ano = data.year
-#     hora = data.hour
-#     minutos = data.minute
-#     segundos = data.second
-#
-#     print("Dia:", dia)
-#     print("Mês:", mes)
-#     print("Ano:", ano)
-#     print("Hora:", hora)
-#     print("Minutos:", minutos)
-#     print("Segundos:", segundos)
-#
-#     data_atual = datetime.now()
-#
-#     if data <= data_atual:
-#         print('Data é menor')
-#     else:
-#         print('Data nao é menor')
-#
+    # dados = transacoes.hora()
+
+
+    # data = agora.date()
+    # hora = agora.time()
+    #
+    # print("Data:", data)
+    # print("Hora:", hora)
+# pegarhora()
+
+
+    #
+    # data = datetime.strptime(hora,"%a, %d %b %Y %H:%M:%S %Z")
+    #
+    #
+    # print(data)
+    # dia = data.day
+    # mes = data.month
+    # ano = data.year
+    # hora = data.hour
+    # minutos = data.minute
+    # segundos = data.second
+    #
+    # print("Dia:", dia)
+    # print("Mês:", mes)
+    # print("Ano:", ano)
+    # print("Hora:", hora)
+    # print("Minutos:", minutos)
+    # print("Segundos:", segundos)
+    #
+    # data_atual = datetime.now()
+    #
+    # if data <= data_atual:
+    #     print('Data é menor')
+    # else:
+    #     print('Data nao é menor')
+
 # def percentual():
 #     Validadores = Validador.query.all()
 #
@@ -120,17 +126,17 @@ import random
 
 
 
-from collections import Counter
-
-json_data = [{'id': 2, 'status': 1}, {'id': 3, 'status': 0}, {'id': 4, 'status': 1},{'id': 1, 'status': 0},{'id': 5, 'status': 0}]
-
-status_counts = Counter(item['status'] for item in json_data)
-
-most_common_status = status_counts.most_common(1)[0][0]
-
-print(f"O valor de status que mais aparece é: {most_common_status}")
-
-ids_with_different_status = [item['id'] for item in json_data if item['status'] != most_common_status]
-
-print(f"IDs com valores de status diferentes da maioria: {ids_with_different_status}")
+# from collections import Counter
+#
+# json_data = [{'id': 2, 'status': 1}, {'id': 3, 'status': 0}, {'id': 4, 'status': 1},{'id': 1, 'status': 0},{'id': 5, 'status': 0}]
+#
+# status_counts = Counter(item['status'] for item in json_data)
+#
+# most_common_status = status_counts.most_common(1)[0][0]
+#
+# print(f"O valor de status que mais aparece é: {most_common_status}")
+#
+# ids_with_different_status = [item['id'] for item in json_data if item['status'] != most_common_status]
+#
+# print(f"IDs com valores de status diferentes da maioria: {ids_with_different_status}")
 

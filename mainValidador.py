@@ -9,7 +9,7 @@ import cliente
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///testeValidador.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///validador.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -18,15 +18,39 @@ migrate = Migrate(app, db)
 def index():
     return render_template('api.html')
 
-@app.route('/validar/<int:id>/<int:valorRem>/<int:valorTrans>', methods=['POST'])
-def receberTransacao(id,valorRem, valorTrans):
 
-    if valorRem >= valorTrans:
+
+
+def hora_sistema():
+    url = f'http://127.0.0.1:5000/hora'
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        dados = response.json()
+        print('Hora recebida com sucesso!')
+        return dados
+    else:
+        print('Falha ao enviar a mensagem.')
+
+
+@app.route('/validar/<int:id>/<int:valorRem>/<int:valorTrans>/<string:horario>', methods=['POST'])
+def receberTransacao(id,valorRem, valorTrans,horario):
+    agora = datetime.now()
+
+    #HORARIO SISTEMA Prizyada
+    # data = hora_sistema()
+    # dt = datetime.strptime(data, "%a, %d %b %Y %H:%M:%S %Z")
+
+    horario = datetime.strptime(horario, '%Y-%m-%d %H:%M:%S.%f')
+
+    if valorRem >= valorTrans and horario <= agora:
         response_data = {'id': id, 'status': 1 }  #PODE
     else:
         response_data = {'id': id, 'status': 0}  #NÃO PODE
 
     return jsonify(response_data)
+
+
 
 
 
