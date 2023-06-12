@@ -18,7 +18,6 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
-
 @dataclass
 class Validador(db.Model):
     id: int
@@ -49,6 +48,23 @@ class MeuSeletor(db.Model):
     fCoins = db.Column(db.Integer, unique=False, nullable=False)
     qtd_transacoes = db.Column(db.Integer, unique=False, nullable=False)
 
+@dataclass
+class minhasTransacoes(db.Model):
+    id: int
+    idTransacao: int
+    fCoins: int
+    idValidadores: str
+    status: int
+    RValidadores: int
+
+    id = db.Column(db.Integer, primary_key=True)
+    idTransacao = db.Column(db.Integer, unique=True, nullable=False)
+    RValidadores = db.Column(db.Integer, unique=False, nullable=False)
+    status = db.Column(db.Integer, unique=False, nullable=False)
+    fCoins = db.Column(db.Integer, unique=False, nullable=False)
+    idValidadores = db.Column(db.String(50), unique=False, nullable=False)
+
+
 @app.route("/")
 def index():
     return render_template('api.html')
@@ -57,6 +73,62 @@ def inicializarSeletor():
     objeto = MeuSeletor(fCoins=0,qtd_transacoes=0)
     db.session.add(objeto)
     db.session.commit()
+
+@app.route('/trans', methods=['GET'])
+def transacoes():
+    if (request.method == 'GET'):
+        transacoes = minhasTransacoes.query.all()
+        return jsonify(transacoes)
+
+@app.route('/trans/<int:idTransacao>/<int:status>', methods=['POST'])
+def AttTransacoes(idTransacao,status):
+    if request.method == 'POST' and idTransacao != '' and status != '':
+        Mtransacoes = minhasTransacoes.query.filter_by(idTransacao=idTransacao).first()
+
+        Mtransacoes.status = status
+        db.session.commit()
+        verifica_transacao(idTransacao)
+
+        return jsonify(Mtransacoes)
+    else:
+        return jsonify(['Method Not Allowed'])
+
+def Cadastro_das_Transacoes(idTransacao, fCoins,idValidadores,RValidadores):
+    objeto = minhasTransacoes(idTransacao=idTransacao,fCoins=fCoins,idValidadores=idValidadores,status=0,RValidadores=RValidadores)
+    db.session.add(objeto)
+    db.session.commit()
+
+    return jsonify(objeto)
+
+def verifica_transacao(id):
+    Mtransacoes = minhasTransacoes.query.filter_by(idTransacao=id).first()
+    meuSeletor = MeuSeletor.query.filter_by(id=1).first()
+
+    if Mtransacoes.RValidadores == Mtransacoes.status and Mtransacoes.status == 1:
+        print('Validadores Acertaram agora vao ganhar a recompensa')
+        validadores = Validador.query.all()
+
+        pagamento = Mtransacoes.fCoins * (15 / 100)
+        print(f'O pagamento total foi de: {pagamento}')
+        payValidador = pagamento * (8 / 100)
+
+        for v in validadores:
+            if str(v.id) in Mtransacoes.idValidadores:
+                pagamento -= payValidador
+                print(f'O pagamento V foi de: {payValidador}')
+                v.FCoins += payValidador
+            else:
+                print(f"O valor {v.id} não está presente na string.")
+        print(f'O pagamento restante foi de: {pagamento}')
+
+        meuSeletor.fCoins += pagamento
+        db.session.commit()
+        calcular_percent()
+    else:
+        print('Validadores erraram ')
+
+
+
 
 @app.route('/meuSeletor', methods=['GET'])
 def Seletor():
@@ -132,7 +204,7 @@ def UmSeletor(id):
 
 @app.route('/validador/<int:id>', methods=['DELETE'])
 def ApagarValidador(id):
-    if (request.method == 'DELETE'):
+    if (request.method == 'DELETE' and id != ''):
         objeto = Validador.query.get(id)
         meuSeletor = MeuSeletor.query.filter_by(id=1).first()
 
@@ -148,8 +220,8 @@ def ApagarValidador(id):
     else:
         return jsonify(['Method Not Allowed'])
 
-@app.route('/transacao/<int:id>/<int:remetente>/<int:recebedor>/<int:valor>/<int:status>/<string:horario>', methods=['POST'])
-def receberTransacao(id,remetente,recebedor,valor,status,horario):
+@app.route('/transacao/<int:id>/<int:remetente>/<int:idSeletor>/<int:valor>/<string:horario>', methods=['POST'])
+def receberTransacao(id,remetente,idSeletor,valor,horario):
     if request.method == 'POST':
         Validadores = Validador.query.all()
         rem = cliente.visualizar_Cliente_id(remetente)
@@ -190,7 +262,20 @@ def receberTransacao(id,remetente,recebedor,valor,status,horario):
             #ADICIONA UMA FLAG E CASO SEJA A TERCEIRA ELE É DELETADO DA REDE
             adicionar_flag(different_ids)
 
-        return 'retorno mainSeletor transacao'
+        response_data = {'id_transacao': id, 'status': most_common_status,'id_seletor': idSeletor}
+        print(response_data)
+
+        # Criar uma nova lista com os elementos formatados
+        numeros_formatados = [f"id: {num}" for num in ids_with_same_status]
+
+        # Unir os elementos da lista em uma única string, separados por vírgulas
+        string_formatada = ", ".join(numeros_formatados)
+
+        print(string_formatada)
+
+        Cadastro_das_Transacoes(id,valor,string_formatada,most_common_status)
+
+        return response_data
     else:
         return jsonify(['Method Not Allowed'])
 
@@ -295,6 +380,7 @@ def tres_validadores():
     # limpa as listas
     validadoresID.clear()
     pesos.clear()
+
     for v in Validadores:
         if v.id != v1 and v.id != v2:
             validadoresID.append(v.id)
