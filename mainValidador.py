@@ -43,10 +43,11 @@ def receberTransacao(id,valorRem, valorTrans,horario):
 
     horario = datetime.strptime(horario, '%Y-%m-%d %H:%M:%S.%f')
 
+
     if valorRem >= valorTrans and horario <= agora:
         response_data = {'id': id, 'status': 1 }  #PODE
     else:
-        response_data = {'id': id, 'status': 0}  #NÃO PODE
+        response_data = {'id': id, 'status': 2}  #NÃO PODE
 
     return jsonify(response_data)
 

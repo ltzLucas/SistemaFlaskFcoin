@@ -13,7 +13,6 @@ def cadastrar_transacao(rem, reb,valor):
         print('Falha ao enviar a mensagem.')
 
 
-
 def visualizar_transacoes():
     url = f'http://127.0.0.1:5000/transacoes'
     response = requests.get(url)
