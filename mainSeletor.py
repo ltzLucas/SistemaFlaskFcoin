@@ -244,6 +244,74 @@ def tirar_flag(id):
         validadorObjeto.aux_flag += 1
         db.session.commit()
 
+def cinco_validadores():
+    Validadores = Validador.query.all()
+    validadoresID = []
+    pesos = []
+
+    escolhidos = tres_validadores()
+
+    for v in Validadores:
+        if v.id != escolhidos[0] and v.id != escolhidos[1] and v.id != escolhidos[2]:
+            validadoresID.append(v.id)
+            pesos.append(v.percent)
+
+    v4 = random.choices(validadoresID, pesos)[0]
+    # limpa as listas
+    validadoresID.clear()
+    pesos.clear()
+
+    escolhidos.append(v4)
+
+    for v in Validadores:
+        if v.id != escolhidos[0] and v.id != escolhidos[1] and v.id != escolhidos[2] and v.id != v4:
+            validadoresID.append(v.id)
+            pesos.append(v.percent)
+
+    v5 = random.choices(validadoresID, pesos)[0]
+    escolhidos.append(v5)
+
+    return escolhidos
+def tres_validadores():
+    Validadores = Validador.query.all()
+    validadoresID = []
+    pesos = []
+    for v in Validadores:
+        validadoresID.append(v.id)
+        pesos.append(v.percent)
+
+    v1 = random.choices(validadoresID, pesos)[0]
+    # limpa as listas
+    validadoresID.clear()
+    pesos.clear()
+
+    for v in Validadores:
+        if v.id != v1:
+            validadoresID.append(v.id)
+            pesos.append(v.percent)
+
+    v2 = random.choices(validadoresID, pesos)[0]
+    # limpa as listas
+    validadoresID.clear()
+    pesos.clear()
+    for v in Validadores:
+        if v.id != v1 and v.id != v2:
+            validadoresID.append(v.id)
+            pesos.append(v.percent)
+
+    v3 = random.choices(validadoresID, pesos)[0]
+    # limpa as listas
+    validadoresID.clear()
+    pesos.clear()
+    for v in Validadores:
+        if v.id != v1 and v.id != v2 and v.id != v3:
+            validadoresID.append(v.id)
+            pesos.append(v.percent)
+
+    escolhidos = [v1, v2, v3]
+
+    return escolhidos
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('page_not_found.html'), 404
