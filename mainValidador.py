@@ -1,5 +1,5 @@
 from time import time
-from flask import Flask, request, redirect, render_template, jsonify
+from flask import Flask, request, redirect, render_template, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from dataclasses import dataclass
@@ -18,13 +18,16 @@ migrate = Migrate(app, db)
 def index():
     return render_template('api.html')
 
-@app.route('/validar/<int:valorRem>/<int:valorTrans>', methods=['POST'])
-def receberTransacao(valorRem, valorTrans):
+@app.route('/validar/<int:id>/<int:valorRem>/<int:valorTrans>', methods=['POST'])
+def receberTransacao(id,valorRem, valorTrans):
 
     if valorRem >= valorTrans:
-        return 'pode' # PODE
+        response_data = {'id': id, 'status': 1 }  #PODE
     else:
-        return 'nao pode' # NAO PODE
+        response_data = {'id': id, 'status': 0}  #NÃO PODE
+
+    return jsonify(response_data)
+
 
 
 

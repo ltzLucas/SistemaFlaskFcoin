@@ -252,15 +252,6 @@ def CriaTransacao(rem, reb, valor):
         return jsonify(objeto)
     else:
         return jsonify(['Method Not Allowed'])
-#
-# @app.route('/transacoes/<int:id>', methods=['GET'])
-# def UmaTransacao(id):
-#     if (request.method == 'GET'):
-#         objeto = Transacao.query.get(id)
-#         return jsonify(objeto)
-#     else:
-#         return jsonify(['Method Not Allowed'])
-
 
 @app.route('/transactions/<int:id>/<int:status>', methods=['POST'])
 def EditaTransacao(id, status):

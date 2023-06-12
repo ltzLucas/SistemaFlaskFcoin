@@ -99,22 +99,38 @@ import random
 #
 
 
-import random
+# import random
+#
+# validadores = ["A", "B", "C","D","E"]
+# percentual_A = 5
+# percentual_B = 40
+# percentual_C = 30
+# percentual_D = 35
+# percentual_E = 20
+# pesos = [percentual_A, percentual_B, percentual_C,percentual_D,percentual_E]
+#
+# escolha1 = random.choices(validadores, pesos)[0]
+#
+# validadores.remove(escolha1)
+#
+# escolha2 = random.choice(validadores)
+#
+# print(escolha1)
+# print(escolha2)
 
-validadores = ["A", "B", "C","D","E"]
-percentual_A = 5
-percentual_B = 40
-percentual_C = 30
-percentual_D = 35
-percentual_E = 20
-pesos = [percentual_A, percentual_B, percentual_C,percentual_D,percentual_E]
 
-escolha1 = random.choices(validadores, pesos)[0]
 
-validadores.remove(escolha1)
+from collections import Counter
 
-escolha2 = random.choice(validadores)
+json_data = [{'id': 2, 'status': 1}, {'id': 3, 'status': 0}, {'id': 4, 'status': 1},{'id': 1, 'status': 0},{'id': 5, 'status': 0}]
 
-print(escolha1)
-print(escolha2)
+status_counts = Counter(item['status'] for item in json_data)
+
+most_common_status = status_counts.most_common(1)[0][0]
+
+print(f"O valor de status que mais aparece é: {most_common_status}")
+
+ids_with_different_status = [item['id'] for item in json_data if item['status'] != most_common_status]
+
+print(f"IDs com valores de status diferentes da maioria: {ids_with_different_status}")
 
