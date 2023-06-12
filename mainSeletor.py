@@ -134,6 +134,10 @@ def UmSeletor(id):
 def ApagarValidador(id):
     if (request.method == 'DELETE'):
         objeto = Validador.query.get(id)
+        meuSeletor = MeuSeletor.query.filter_by(id=1).first()
+
+        meuSeletor.fCoins -= objeto.FCoins
+        db.session.commit()
         db.session.delete(objeto)
         db.session.commit()
 
