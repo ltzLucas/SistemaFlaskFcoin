@@ -18,6 +18,7 @@ migrate = Migrate(app, db)
 
 
 @dataclass
+@dataclass
 class Validador(db.Model):
     id: int
     nome: str
@@ -25,6 +26,8 @@ class Validador(db.Model):
     flag: int
     FCoins: int
     percent: int
+    transacoes: int
+    aux_flag: int
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(20), unique=False, nullable=False)
@@ -32,6 +35,9 @@ class Validador(db.Model):
     flag = db.Column(db.Integer, unique=False, nullable=False)
     FCoins = db.Column(db.Integer, unique=False, nullable=False)
     percent = db.Column(db.Integer, unique=False, nullable=False)
+    transacoes = db.Column(db.Integer, unique=False, nullable=False)
+    aux_flag = db.Column(db.Integer, unique=False, nullable=False)
+
 
 @app.route("/")
 def index():
