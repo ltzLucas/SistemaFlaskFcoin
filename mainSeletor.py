@@ -58,19 +58,11 @@ def inicializarSeletor():
     db.session.add(objeto)
     db.session.commit()
 
-
-@app.route('/validador', methods=['GET'])
-def ListarCliente():
-    if (request.method == 'GET'):
-        clientes = Validador.query.all()
-        return jsonify(clientes)
-
 @app.route('/meuSeletor', methods=['GET'])
 def Seletor():
     if (request.method == 'GET'):
         seletor = MeuSeletor.query.all()
         return jsonify(seletor)
-
 
 @app.route('/meuSeletor/<int:id>', methods=['DELETE'])
 def ApagarMeuSeletor(id):
@@ -86,10 +78,16 @@ def ApagarMeuSeletor(id):
     else:
         return jsonify(['Method Not Allowed'])
 
+@app.route('/validador', methods=['GET'])
+def ListarCliente():
+    if (request.method == 'GET'):
+        clientes = Validador.query.all()
+        return jsonify(clientes)
+
 @app.route('/validador/<string:nome>/<string:ip>/<int:FCoins>', methods=['POST'])
 def Cadastro_dos_Validadores(nome, ip,FCoins):
-    if request.method == 'POST' and nome != '' and ip != '':
-        objeto = Validador(nome=nome, ip=ip,flag=0,FCoins=FCoins,percent=0)
+    if request.method == 'POST' and nome != '' and ip != '' and FCoins >= 100:
+        objeto = Validador(nome=nome, ip=ip,flag=0,FCoins=FCoins,percent=0,transacoes=0,aux_flag=1)
         db.session.add(objeto)
         db.session.commit()
 
