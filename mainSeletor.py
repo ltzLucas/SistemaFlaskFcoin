@@ -13,12 +13,12 @@ import time
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///testeSeletor12.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stsaws.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
-@dataclass
+
 @dataclass
 class Validador(db.Model):
     id: int
@@ -48,7 +48,6 @@ class MeuSeletor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fCoins = db.Column(db.Integer, unique=False, nullable=False)
     qtd_transacoes = db.Column(db.Integer, unique=False, nullable=False)
-
 
 @app.route("/")
 def index():
@@ -82,8 +81,8 @@ def ApagarMeuSeletor(id):
 @app.route('/validador', methods=['GET'])
 def ListarCliente():
     if (request.method == 'GET'):
-        clientes = Validador.query.all()
-        return jsonify(clientes)
+        validador = Validador.query.all()
+        return jsonify(validador)
 
 @app.route('/validador/<string:nome>/<string:ip>/<int:FCoins>', methods=['POST'])
 def Cadastro_dos_Validadores(nome, ip,FCoins):
@@ -195,6 +194,7 @@ def receberTransacao(id,remetente,recebedor,valor,status):
     else:
         return jsonify(['Method Not Allowed'])
 
+
 def escolhe_validadores():
     Validadores = Validador.query.all()
 
@@ -213,6 +213,7 @@ def escolhe_validadores():
         escolhidos = tres_validadores()
         print(f'3 ou 4 validadores os escolhidos sao:  {escolhidos}')
         return escolhidos
+
 
 def adicionar_transacao(id):
     validadorObjeto = Validador.query.filter_by(id=id).first()
@@ -312,6 +313,8 @@ def tres_validadores():
 
     return escolhidos
 
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('page_not_found.html'), 404
@@ -325,3 +328,6 @@ if __name__ == "__main__":
         #inicializarSeletor()
 
 app.run(host='0.0.0.0',port=5001, debug=True)
+
+#http://127.0.0.1:5001/validador/VALIDADOR1/127.0.0.1:5002/100
+#http://127.0.0.1:5001/meuSeletor
