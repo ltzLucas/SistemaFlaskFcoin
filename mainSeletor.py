@@ -69,10 +69,6 @@ class minhasTransacoes(db.Model):
 def index():
     return render_template('api.html')
 
-def inicializarSeletor():
-    objeto = MeuSeletor(fCoins=0,qtd_transacoes=0)
-    db.session.add(objeto)
-    db.session.commit()
 
 @app.route('/trans', methods=['GET'])
 def transacoes():
@@ -92,43 +88,6 @@ def AttTransacoes(idTransacao,status):
         return jsonify(Mtransacoes)
     else:
         return jsonify(['Method Not Allowed'])
-
-def Cadastro_das_Transacoes(idTransacao, fCoins,idValidadores,RValidadores):
-    objeto = minhasTransacoes(idTransacao=idTransacao,fCoins=fCoins,idValidadores=idValidadores,status=0,RValidadores=RValidadores)
-    db.session.add(objeto)
-    db.session.commit()
-
-    return jsonify(objeto)
-
-def verifica_transacao(id):
-    Mtransacoes = minhasTransacoes.query.filter_by(idTransacao=id).first()
-    meuSeletor = MeuSeletor.query.filter_by(id=1).first()
-
-    if Mtransacoes.RValidadores == Mtransacoes.status and Mtransacoes.status == 1:
-        print('Validadores Acertaram agora vao ganhar a recompensa')
-        validadores = Validador.query.all()
-
-        pagamento = Mtransacoes.fCoins * (15 / 100)
-        print(f'O pagamento total foi de: {pagamento}')
-        payValidador = pagamento * (8 / 100)
-
-        for v in validadores:
-            if str(v.id) in Mtransacoes.idValidadores:
-                pagamento -= payValidador
-                print(f'O pagamento V foi de: {payValidador}')
-                v.FCoins += payValidador
-            else:
-                print(f"O valor {v.id} não está presente na string.")
-        print(f'O pagamento restante foi de: {pagamento}')
-
-        meuSeletor.fCoins += pagamento
-        db.session.commit()
-        calcular_percent()
-    else:
-        print('Validadores erraram ')
-
-
-
 
 @app.route('/meuSeletor', methods=['GET'])
 def Seletor():
@@ -167,31 +126,6 @@ def Cadastro_dos_Validadores(nome, ip,FCoins):
         return jsonify(objeto)
     else:
         return jsonify(['Method Not Allowed'])
-
-def calcular_percent():
-    validadores = Validador.query.all()
-    meuSeletor = MeuSeletor.query.filter_by(id=1).first()
-
-    totalFCoins = 0
-    for v in validadores:
-        totalFCoins += v.FCoins
-    meuSeletor.fCoins = totalFCoins
-    db.session.commit()
-
-    for v in validadores:
-        percentual = int((v.FCoins / meuSeletor.fCoins) * 100)
-        if percentual < 5:
-            percent = 5
-        elif percentual > 40:
-            percent = 40
-        else:
-            percent = percentual
-
-        validadorObjeto = Validador.query.filter_by(id=v.id).first()
-        db.session.commit()
-        validadorObjeto.percent = percent
-        db.session.commit()
-        # print(f'Validador {v.id} está com o percentual de {percent}')
 
 
 @app.route('/validador/<int:id>', methods=['GET'])
@@ -399,7 +333,71 @@ def tres_validadores():
 
     return escolhidos
 
+def Cadastro_das_Transacoes(idTransacao, fCoins,idValidadores,RValidadores):
+    objeto = minhasTransacoes(idTransacao=idTransacao,fCoins=fCoins,idValidadores=idValidadores,status=0,RValidadores=RValidadores)
+    db.session.add(objeto)
+    db.session.commit()
 
+    return jsonify(objeto)
+
+
+
+def inicializarSeletor():
+    objeto = MeuSeletor(fCoins=0,qtd_transacoes=0)
+    db.session.add(objeto)
+    db.session.commit()
+
+def calcular_percent():
+    validadores = Validador.query.all()
+    meuSeletor = MeuSeletor.query.filter_by(id=1).first()
+
+    totalFCoins = 0
+    for v in validadores:
+        totalFCoins += v.FCoins
+    meuSeletor.fCoins = totalFCoins
+    db.session.commit()
+
+    for v in validadores:
+        percentual = int((v.FCoins / meuSeletor.fCoins) * 100)
+        if percentual < 5:
+            percent = 5
+        elif percentual > 40:
+            percent = 40
+        else:
+            percent = percentual
+
+        validadorObjeto = Validador.query.filter_by(id=v.id).first()
+        db.session.commit()
+        validadorObjeto.percent = percent
+        db.session.commit()
+        # print(f'Validador {v.id} está com o percentual de {percent}')
+
+def verifica_transacao(id):
+    Mtransacoes = minhasTransacoes.query.filter_by(idTransacao=id).first()
+    meuSeletor = MeuSeletor.query.filter_by(id=1).first()
+
+    if Mtransacoes.RValidadores == Mtransacoes.status and Mtransacoes.status == 1:
+        print('Validadores Acertaram agora vao ganhar a recompensa')
+        validadores = Validador.query.all()
+
+        pagamento = Mtransacoes.fCoins * (15 / 100)
+        print(f'O pagamento total foi de: {pagamento}')
+        payValidador = pagamento * (8 / 100)
+
+        for v in validadores:
+            if str(v.id) in Mtransacoes.idValidadores:
+                pagamento -= payValidador
+                print(f'O pagamento V foi de: {payValidador}')
+                v.FCoins += payValidador
+            else:
+                print(f"O valor {v.id} não está presente na string.")
+        print(f'O pagamento restante foi de: {pagamento}')
+
+        meuSeletor.fCoins += pagamento
+        db.session.commit()
+        calcular_percent()
+    else:
+        print('Validadores erraram ')
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -415,5 +413,3 @@ if __name__ == "__main__":
 
 app.run(host='0.0.0.0',port=5001, debug=True)
 
-#http://127.0.0.1:5001/validador/VALIDADOR1/127.0.0.1:5002/100
-#http://127.0.0.1:5001/meuSeletor

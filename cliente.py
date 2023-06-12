@@ -12,8 +12,6 @@ def adicionar_Cliente(nome, senha,qtdMoedas):
     else:
         print('Falha ao enviar a mensagem.')
 
-
-
 def visualizar_Cliente():
     url = f'http://127.0.0.1:5000/cliente'
     response = requests.get(url)
@@ -25,8 +23,6 @@ def visualizar_Cliente():
         print(dados)
     else:
         print('Falha ao enviar a mensagem.')
-
-
 
 def visualizar_Cliente_id(id):
     url = f'http://127.0.0.1:5000/cliente/{id}'

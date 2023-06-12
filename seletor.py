@@ -1,6 +1,5 @@
 import requests
 
-
 def cadastrar_seletor(nome,ip):
     url = f'http://127.0.0.1:5000/seletor/{nome}/{ip}'  # URL do endpoint Flask
     response = requests.post(url)
