@@ -65,6 +65,21 @@ def ListarCliente():
         clientes = Validador.query.all()
         return jsonify(clientes)
 
+
+@app.route('/meuSeletor/<int:id>', methods=['DELETE'])
+def ApagarMeuSeletor(id):
+    if (request.method == 'DELETE'):
+        objeto = MeuSeletor.query.get(id)
+        db.session.delete(objeto)
+        db.session.commit()
+
+        data = {
+            "message": "meuSeletor Deletado com Sucesso"
+        }
+        return jsonify(data)
+    else:
+        return jsonify(['Method Not Allowed'])
+
 @app.route('/validador/<string:nome>/<string:ip>/<int:FCoins>', methods=['POST'])
 def Cadastro_dos_Validadores(nome, ip,FCoins):
     if request.method == 'POST' and nome != '' and ip != '':
