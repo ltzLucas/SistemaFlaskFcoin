@@ -53,6 +53,12 @@ class MeuSeletor(db.Model):
 def index():
     return render_template('api.html')
 
+def inicializarSeletor():
+    objeto = MeuSeletor(fCoins=0,qtd_transacoes=0)
+    db.session.add(objeto)
+    db.session.commit()
+
+
 @app.route('/validador', methods=['GET'])
 def ListarCliente():
     if (request.method == 'GET'):
