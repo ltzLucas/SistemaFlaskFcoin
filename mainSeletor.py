@@ -65,6 +65,12 @@ def ListarCliente():
         clientes = Validador.query.all()
         return jsonify(clientes)
 
+@app.route('/meuSeletor', methods=['GET'])
+def Seletor():
+    if (request.method == 'GET'):
+        seletor = MeuSeletor.query.all()
+        return jsonify(seletor)
+
 
 @app.route('/meuSeletor/<int:id>', methods=['DELETE'])
 def ApagarMeuSeletor(id):
