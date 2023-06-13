@@ -1,8 +1,7 @@
 import json
+import requests
 from collections import Counter
 from time import time
-
-import requests
 from flask import Flask, request, redirect, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -14,7 +13,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
 
 @dataclass
 class Cliente(db.Model):
@@ -36,7 +34,7 @@ class Seletor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     nomeSeletor = db.Column(db.String(20), unique=False, nullable=False)
-    ipSeletor = db.Column(db.String(150), unique=False, nullable=False)
+    ipSeletor = db.Column(db.String(20), unique=False, nullable=False)
 
 @dataclass
 class Transacao(db.Model):
@@ -47,14 +45,12 @@ class Transacao(db.Model):
     status: int
     horario: db.DateTime
 
-
     id = db.Column(db.Integer, primary_key=True)
     remetente = db.Column(db.Integer, unique=False, nullable=False)
     recebedor = db.Column(db.Integer, unique=False, nullable=False)
     valor = db.Column(db.Integer, unique=False, nullable=False)
     horario = db.Column(db.DateTime, unique=False, nullable=False)
     status = db.Column(db.Integer, unique=False, nullable=False)
-
 
     def to_dict(self):
         return {
@@ -65,22 +61,15 @@ class Transacao(db.Model):
             'status': self.status
         }
 
-
-# @app.before_first_request
-# def create_tables():
-#    db.create_all()
-
 @app.route("/")
 def index():
     return render_template('api.html')
-
 
 @app.route('/cliente', methods=['GET'])
 def ListarCliente():
     if (request.method == 'GET'):
         clientes = Cliente.query.all()
         return jsonify(clientes)
-
 
 @app.route('/cliente/<string:nome>/<string:senha>/<int:qtdMoedas>', methods=['POST'])
 def InserirCliente(nome, senha, qtdMoedas):
@@ -92,10 +81,9 @@ def InserirCliente(nome, senha, qtdMoedas):
     else:
         return jsonify(['Method Not Allowed'])
 
-
 @app.route('/cliente/<int:id>', methods=['GET'])
 def UmCliente(id):
-    if (request.method == 'GET'):
+    if (request.method == 'GET' and id != ''):
         # objeto = Cliente.query.get(id)
         objeto = db.session.get(Cliente, id)
 
@@ -103,49 +91,37 @@ def UmCliente(id):
     else:
         return jsonify(['Method Not Allowed'])
 
-
 @app.route('/cliente/<int:id>/<int:qtdMoedas>', methods=['POST'])
 def EditarCliente(id, qtdMoedas):
-    if request.method == 'POST':
+    if request.method == 'POST' and id != '' and qtdMoedas != '':
         try:
-            varId = id
-            varqtdMoedas = qtdMoedas
             cliente = Cliente.query.filter_by(id=id).first()
             db.session.commit()
             cliente.qtdMoedas = qtdMoedas
             db.session.commit()
+            
             return jsonify(cliente)
         except Exception as e:
-            data = {
-                "message": "Atualização não realizada"
-            }
-            return jsonify(data)
+            return jsonify({"message": "Atualização não realizada"})
     else:
         return jsonify(['Method Not Allowed'])
 
-
 @app.route('/cliente/<int:id>', methods=['DELETE'])
 def ApagarCliente(id):
-    if (request.method == 'DELETE'):
+    if (request.method == 'DELETE' and id != ''):
         objeto = Cliente.query.get(id)
         db.session.delete(objeto)
         db.session.commit()
 
-        data = {
-            "message": "Cliente Deletado com Sucesso"
-        }
-
-        return jsonify(data)
+        return jsonify({"message": "Cliente Deletado com Sucesso"})
     else:
         return jsonify(['Method Not Allowed'])
-
 
 @app.route('/seletor', methods=['GET'])
 def ListarSeletor():
     if (request.method == 'GET'):
         produtos = Seletor.query.all()
         return jsonify(produtos)
-
 
 @app.route('/seletor/<string:nome>/<string:ip>', methods=['POST'])
 def InserirSeletor(nome, ip):
@@ -157,19 +133,17 @@ def InserirSeletor(nome, ip):
     else:
         return jsonify(['Method Not Allowed'])
 
-
 @app.route('/seletor/<int:id>', methods=['GET'])
 def UmSeletor(id):
-    if (request.method == 'GET'):
+    if (request.method == 'GET' and id != ''):
         produto = Seletor.query.get(id)
         return jsonify(produto)
     else:
         return jsonify(['Method Not Allowed'])
 
-
 @app.route('/seletor/<int:id>/<string:nome>/<string:ip>', methods=['POST'])
 def EditarSeletor(id, nome, ip):
-    if request.method == 'POST':
+    if request.method == 'POST' and id != '' and nome != '' and ip != '':
         try:
             varNome = nome
             varIp = ip
@@ -180,29 +154,20 @@ def EditarSeletor(id, nome, ip):
             db.session.commit()
             return jsonify(validador)
         except Exception as e:
-            data = {
-                "message": "Atualização não realizada"
-            }
-            return jsonify(data)
+            return jsonify({"message": "Atualização não realizada"})
     else:
         return jsonify(['Method Not Allowed'])
 
-
 @app.route('/seletor/<int:id>', methods=['DELETE'])
 def ApagarSeletor(id):
-    if (request.method == 'DELETE'):
+    if (request.method == 'DELETE' and id != ''):
         objeto = Seletor.query.get(id)
         db.session.delete(objeto)
         db.session.commit()
 
-        data = {
-            "message": "Seletor Deletado com Sucesso"
-        }
-
-        return jsonify(data)
+        return jsonify({"message": "Seletor Deletado com Sucesso"})
     else:
         return jsonify(['Method Not Allowed'])
-
 
 @app.route('/hora', methods=['GET'])
 def horario():
@@ -216,7 +181,6 @@ def ListarTransacoes():
     if (request.method == 'GET'):
         transacoes = Transacao.query.all()
         return jsonify(transacoes)
-
 
 # @app.route('/transacoes/<int:rem>/<int:reb>/<int:valor>', methods=['POST'])
 # def CriaTransacao(rem, reb, valor):
@@ -238,18 +202,16 @@ def ListarTransacoes():
 #     else:
 #         return jsonify(['Method Not Allowed'])
 
-#----------------------------------------------------------MUDEI GRANDE PARTE DO Código------------------------------------------------------------------------------------
+#----------------------------------------------------------MUDEI GRANDE PARTE DO CÓDIGO------------------------------------------------------------------------------------
 @app.route('/transacoes/<int:rem>/<int:reb>/<int:valor>', methods=['POST'])
 def CriaTransacao(rem, reb, valor):
-    if request.method == 'POST':
+    if request.method == 'POST' and rem != '' and reb != '' and valor != '':
         objeto = Transacao(remetente=rem, recebedor=reb, valor=valor, status=0, horario=datetime.now())
         db.session.add(objeto)
         db.session.commit()
-
-        print(objeto.horario)
-
         seletores = Seletor.query.all()
         resultado_json = []
+
         for i in seletores:
             url = f'http://{i.ipSeletor}/transacao/{objeto.id}/{objeto.remetente}/{i.id}/{objeto.valor}/{objeto.horario}'
             response = requests.post(url)
@@ -259,8 +221,6 @@ def CriaTransacao(rem, reb, valor):
 
         # Identificar o valor com maior contagem
         valor_mais_frequente = contagem_status.most_common(1)[0][0]
-
-        print(valor_mais_frequente)
 
         editaTransacao(objeto.id,valor_mais_frequente)
 
@@ -273,7 +233,7 @@ def CriaTransacao(rem, reb, valor):
 
 @app.route('/transactions/<int:id>/<int:status>', methods=['POST'])
 def EditaTransacao(id, status):
-    if request.method == 'POST':
+    if request.method == 'POST' and id != '' and status != '':
         try:
             objeto = Transacao.query.filter_by(id=id).first()
             db.session.commit()
@@ -282,20 +242,16 @@ def EditaTransacao(id, status):
             db.session.commit()
             return jsonify(objeto)
         except Exception as e:
-            data = {
-                "message": "transação não atualizada"
-            }
-            return jsonify(data)
+            return jsonify({"message": "transação não atualizada"})
     else:
         return jsonify(['Method Not Allowed'])
+    
 def editaTransacao(id,status):
     url = f'http://127.0.0.1:5000/transactions/{id}/{status}'  # URL do endpoint Flask
     response = requests.post(url)
 
     if response.status_code == 200:
         dados = response.json()
-        print('Resposta do servidor:')
-        print(dados)
     else:
         print('Falha ao enviar a mensagem.')
 
@@ -310,11 +266,9 @@ def editaTransacaoSeletor(id,status):
     else:
         print('Falha ao enviar a mensagem.')
 
-
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('page_not_found.html'), 404
-
 
 if __name__ == "__main__":
     with app.app_context():

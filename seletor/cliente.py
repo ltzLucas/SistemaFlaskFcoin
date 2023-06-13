@@ -49,8 +49,8 @@ def deletar_cliente(id):
         print('Falha ao enviar a mensagem.')
 
 
-# adicionar_Cliente('Joao Cliente', 'Joao123',1000)
+adicionar_Cliente('teste Cliente', 'teste123',10000)
 # visualizar_Cliente()
-visualizar_Cliente_id(2)
+# visualizar_Cliente_id(2)
 # deletar_cliente(2)
 

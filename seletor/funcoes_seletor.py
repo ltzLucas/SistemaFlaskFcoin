@@ -48,8 +48,8 @@ def deletar_seletor(id):
     else:
         print('Falha ao enviar a mensagem.')
 
-cadastrar_seletor('Seletor do lulu','192.168.1.2:5001')
-visualizar_seletor()
+cadastrar_seletor('Seletor','192.168.1.2:5001')
+# visualizar_seletor()
 # visualizar_seletor_id(1)
 # deletar_seletor(2)
 

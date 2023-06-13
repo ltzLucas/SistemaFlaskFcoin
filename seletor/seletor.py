@@ -13,10 +13,9 @@ import time
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///seletor.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
 
 @dataclass
 class Validador(db.Model):
@@ -159,8 +158,9 @@ def receberTransacao(id,remetente,idSeletor,valor,horario):
     if request.method == 'POST':
         Validadores = Validador.query.all()
         rem = cliente.visualizar_Cliente_id(remetente)
-
+        print('chegou');
         escolhidos = escolhe_validadores()
+        print('chegou');
 
         saldoRem = rem['qtdMoeda']
         resultado_json = []
@@ -171,8 +171,6 @@ def receberTransacao(id,remetente,idSeletor,valor,horario):
                     response = requests.post(url)
                     resultado_json.append(response.json())
 
-
-        print(resultado_json)
 
         status_counts = Counter(item['status'] for item in resultado_json)
 
@@ -197,7 +195,6 @@ def receberTransacao(id,remetente,idSeletor,valor,horario):
             adicionar_flag(different_ids)
 
         response_data = {'id_transacao': id, 'status': most_common_status,'id_seletor': idSeletor}
-        print(response_data)
 
         # Criar uma nova lista com os elementos formatados
         numeros_formatados = [f"id: {num}" for num in ids_with_same_status]
@@ -205,7 +202,6 @@ def receberTransacao(id,remetente,idSeletor,valor,horario):
         # Unir os elementos da lista em uma única string, separados por vírgulas
         string_formatada = ", ".join(numeros_formatados)
 
-        print(string_formatada)
 
         Cadastro_das_Transacoes(id,valor,string_formatada,most_common_status)
 
@@ -377,21 +373,21 @@ def verifica_transacao(id):
     meuSeletor = MeuSeletor.query.filter_by(id=1).first()
 
     if Mtransacoes.RValidadores == Mtransacoes.status and Mtransacoes.status == 1:
-        print('Validadores Acertaram agora vao ganhar a recompensa')
+        # print('Validadores Acertaram agora vao ganhar a recompensa')
         validadores = Validador.query.all()
 
         pagamento = Mtransacoes.fCoins * (15 / 100)
-        print(f'O pagamento total foi de: {pagamento}')
+        # print(f'O pagamento total foi de: {pagamento}')
         payValidador = pagamento * (8 / 100)
 
         for v in validadores:
             if str(v.id) in Mtransacoes.idValidadores:
                 pagamento -= payValidador
-                print(f'O pagamento V foi de: {payValidador}')
+                # print(f'O pagamento V foi de: {payValidador}')
                 v.FCoins += payValidador
             else:
-                print(f"O valor {v.id} não está presente na string.")
-        print(f'O pagamento restante foi de: {pagamento}')
+                print(f"O valor não está presente na string.")
+        # print(f'O pagamento restante foi de: {pagamento}')
 
         meuSeletor.fCoins += pagamento
         db.session.commit()
@@ -403,13 +399,12 @@ def verifica_transacao(id):
 def page_not_found(error):
     return render_template('page_not_found.html'), 404
 
-
-
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-        #LIGAR APENAS UMA VEZ PARA CRIAR UM SELETOR APENAS
-        #inicializarSeletor()
-
+        seletores = MeuSeletor.query.filter_by(id=1).first()
+        if(seletores == None):
+            inicializarSeletor()
+        
 app.run(host='0.0.0.0',port=5001, debug=True)
 
