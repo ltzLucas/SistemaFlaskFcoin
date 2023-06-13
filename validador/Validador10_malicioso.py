@@ -22,7 +22,6 @@ def hora_sistema():
 
 @app.route('/validar/<int:id>/<int:valorRem>/<int:valorTrans>/<string:horario>', methods=['POST'])
 def receberTransacao(id,valorRem, valorTrans,horario):
-
     return jsonify({'id': id, 'status': 2})
 
 @app.errorhandler(404)
@@ -30,4 +29,4 @@ def page_not_found(error):
     return render_template('page_not_found.html'), 404
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=50010, debug=True)
+    app.run(host='0.0.0.0',port=5011, debug=True)
