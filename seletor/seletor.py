@@ -158,9 +158,9 @@ def receberTransacao(id,remetente,idSeletor,valor,horario):
     if request.method == 'POST':
         Validadores = Validador.query.all()
         rem = cliente.visualizar_Cliente_id(remetente)
-        print('chegou');
+        print('chegou')
         escolhidos = escolhe_validadores()
-        print('chegou');
+        print('chegou')
 
         saldoRem = rem['qtdMoeda']
         resultado_json = []

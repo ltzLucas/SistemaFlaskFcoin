@@ -214,6 +214,7 @@ def CriaTransacao(rem, reb, valor):
 
         for i in seletores:
             url = f'http://{i.ipSeletor}/transacao/{objeto.id}/{objeto.remetente}/{i.id}/{objeto.valor}/{objeto.horario}'
+            print('mandou')
             response = requests.post(url)
             resultado_json.append(response.json())
         # Contar a ocorrência de cada valor de status
