@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from dataclasses import dataclass
 from datetime import date, datetime
 import requests
-import cliente
+from cliente import visualizar_Cliente_id
 import random
 import time
 
@@ -166,7 +166,7 @@ def receberTransacao(id, remetente, idSeletor, valor, horario):
         return jsonify(['Method Not Allowed'])
         
     Validadores = Validador.query.all()
-    rem = cliente.visualizar_Cliente_id(remetente)
+    rem = visualizar_Cliente_id(remetente)
     escolhidos = escolhe_validadores()
 
     saldoRem = rem['qtdMoeda']
