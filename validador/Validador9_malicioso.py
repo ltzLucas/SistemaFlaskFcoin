@@ -22,6 +22,9 @@ def hora_sistema():
 
 @app.route('/validar/<int:id>/<int:valorRem>/<int:valorTrans>/<string:horario>', methods=['POST'])
 def receberTransacao(id,valorRem, valorTrans,horario):
+    if request.method != 'POST' and id == '':
+        return jsonify(['Method Not Allowed'])
+    
     return jsonify({'id': id, 'status': 2})
 
 @app.errorhandler(404)
